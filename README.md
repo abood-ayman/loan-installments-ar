@@ -1,28 +1,30 @@
-# حاسبة الأقساط الشهرية
+# Loan Installment Calculator | حاسبة الأقساط الشهرية
 
-اعرف قسطك الشهري وإجمالي الفوائد قبل أن توقّع
+Calculate the fixed monthly payment for any loan from amount, annual interest and term, with total cost. Arabic interface.
 
-**رابط الأداة (تعمل فورًا من المتصفح):** https://abood-ayman.github.io/loan-installments-ar/
+**Live app:** https://abood-ayman.github.io/loan-installments-ar/
 
-## ما الذي تقدمه؟
+![Loan Installment Calculator, mobile view](docs/screenshot.svg)
 
-- القسط الشهري الثابت بطريقة القسط المتناقص (annuity)
-- إجمالي المدفوعات وإجمالي الفوائد على كامل المدة
-- يعمل مع فائدة 0٪ (تقسيط بدون فوائد)
-- جدول مختصر لأول ١٢ قسطًا: ما يذهب للفائدة وما يخصم من الأصل
+This is a personal project, built with AI tools.
 
-## الخصوصية
+## Features
+- Fixed monthly payment (annuity method)
+- Total payments and total interest over the full term
+- Works with 0% interest (interest-free installments)
+- Short schedule of the first 12 payments: interest vs principal
 
-تعمل الأداة بالكامل داخل متصفحك (HTML/CSS/JavaScript فقط). لا يوجد خادم، ولا حسابات، ولا تتبّع، ولا تُرسل أو تُحفظ أي بيانات تدخلها خارج جهازك.
+## Note
+Guidance only: your bank's exact terms may differ.
 
-## التقنية
+## Privacy
+Everything runs in your browser. No data is stored or sent anywhere.
 
-صفحة ثابتة واحدة بلا أي مكتبات خارجية، تعمل على الهاتف والحاسوب، وتُستضاف مجانًا عبر GitHub Pages.
+## Run locally
+Open `index.html` in any browser. It is a single static page with no dependencies.
 
-## ملاحظة شفافية
+## Status
+Stable.
 
-بُنيت هذه الأداة بمساعدة أدوات ذكاء اصطناعي، ورُوعيَت بساطتها وفائدتها المباشرة.
-
-## الرخصة
-
-MIT — انظر ملف LICENSE.
+## Copyright
+MIT License - Copyright (c) 2026 Abdullah Ayman.

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>حاسبة الأقساط الشهرية | أداة مجانية</title>
+<meta name="description" content="احسب القسط الشهري لأي قرض أو تقسيط: المبلغ والفائدة السنوية والمدة، مع إجمالي ما ستدفعه. دون إرسال أي بيانات.">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Tahoma,'Segoe UI',Arial,sans-serif;background:#f1f5f9;color:#1e293b;line-height:1.7;min-height:100vh;display:flex;flex-direction:column}
+header{background:linear-gradient(135deg,#0f766e,#14b8a6);color:#fff;padding:1.6rem 1rem;text-align:center}
+header h1{font-size:1.5rem}
+.tagline{opacity:.92;font-size:.95rem;margin-top:.25rem}
+main{flex:1;width:100%;max-width:560px;margin:0 auto;padding:1rem}
+.card{background:#fff;border-radius:14px;padding:1.25rem;box-shadow:0 1px 4px rgba(15,23,42,.08);margin-bottom:1rem}
+.card h2{font-size:1.1rem;margin-bottom:.4rem;color:#0f766e}
+label{display:block;font-weight:700;margin:.75rem 0 .3rem}
+input,select,textarea{width:100%;padding:.7rem .8rem;border:1.5px solid #cbd5e1;border-radius:10px;font-size:1rem;font-family:inherit;background:#fff;color:#1e293b}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#0f766e;box-shadow:0 0 0 3px rgba(20,184,166,.18)}
+.row{display:flex;gap:.6rem}
+.row>*{flex:1;min-width:0}
+button{display:inline-block;width:100%;padding:.8rem;border:0;border-radius:10px;background:#0f766e;color:#fff;font-size:1.05rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:1rem}
+button:hover{background:#115e59}
+button.ghost{background:#e2e8f0;color:#1e293b}
+.result{background:#ecfdf5;border:1.5px solid #6ee7b7;border-radius:10px;padding:1rem;margin-top:1rem;font-size:1.05rem;word-break:break-word}
+.result b{color:#047857}
+.result.warn{background:#fffbeb;border-color:#fcd34d}
+.result.warn b{color:#b45309}
+.result.bad{background:#fef2f2;border-color:#fca5a5}
+.result.bad b{color:#b91c1c}
+.muted{color:#64748b;font-size:.85rem}
+footer{background:#0f172a;color:#94a3b8;text-align:center;padding:1.2rem 1rem;font-size:.85rem;line-height:1.9}
+footer a{color:#5eead4}
+table{width:100%;border-collapse:collapse;margin-top:.5rem}
+th,td{padding:.5rem;border-bottom:1px solid #e2e8f0;text-align:right;font-size:.95rem}
+.big{font-size:1.6rem;font-weight:800}
+.hidden{display:none}
+.chk{display:flex;align-items:center;gap:.5rem;margin:.3rem 0}
+.chk input{width:auto}
+
+</style>
+</head>
+<body>
+<header>
+<h1>حاسبة الأقساط الشهرية</h1>
+<p class="tagline">اعرف قسطك الشهري وإجمالي الفوائد قبل أن توقّع</p>
+</header>
+<main>
+<div class="card">
+<h2>بيانات القرض</h2>
+<label for="amount">مبلغ القرض (جنيه)</label>
+<input type="number" inputmode="decimal" id="amount" min="0" placeholder="مثال: 120000">
+<div class="row">
+<div>
+<label for="rate">الفائدة السنوية ٪</label>
+<input type="number" inputmode="decimal" id="rate" min="0" placeholder="12">
+</div>
+<div>
+<label for="months">المدة بالشهور</label>
+<input type="number" inputmode="numeric" id="months" min="1" placeholder="12">
+</div>
+</div>
+<button onclick="calc()">احسب القسط</button>
+</div>
+<div id="out" class="result hidden"></div>
+<div id="sched" class="card hidden"></div>
+
+</main>
+<footer>
+<p>تعمل هذه الأداة بالكامل على جهازك، ولا تُحفظ أو تُرسل أي بيانات إلى أي خادم.</p>
+<p>أداة مجانية مفتوحة المصدر · بُنيت بمساعدة أدوات ذكاء اصطناعي · <a href="https://github.com/abood-ayman/loan-installments-ar">الكود على GitHub</a></p>
+</footer>
+<script>
+window.__jserrors=[];window.addEventListener('error',function(e){window.__jserrors.push(String(e.message))});
+const g = id => document.getElementById(id);
+const num = id => { const v = parseFloat(g(id).value); return isNaN(v) ? 0 : v; };
+const fmt = x => x.toLocaleString('ar-EG', { maximumFractionDigits: 2 }) + ' جنيه';
+
+function loan(P, annualRate, months) {
+  if (months <= 0 || P < 0) return null;
+  const r = annualRate / 100 / 12;
+  let pmt;
+  if (r === 0) pmt = P / months;
+  else {
+    const f = Math.pow(1 + r, months);
+    pmt = P * r * f / (f - 1);
+  }
+  const total = pmt * months;
+  return { pmt, total, interest: total - P, monthlyRate: r };
+}
+
+function schedule(P, annualRate, months, count) {
+  const l = loan(P, annualRate, months);
+  if (!l) return [];
+  const rows = [];
+  let bal = P;
+  for (let i = 1; i <= Math.min(count, months); i++) {
+    const intPart = bal * l.monthlyRate;
+    const prinPart = l.pmt - intPart;
+    bal = Math.max(0, bal - prinPart);
+    rows.push({ i, pmt: l.pmt, intPart, prinPart, bal });
+  }
+  return rows;
+}
+
+function calc() {
+  const P = num('amount'), rate = num('rate'), months = num('months');
+  const l = loan(P, rate, months);
+  const el = g('out');
+  if (!l) { el.classList.remove('hidden'); el.innerHTML = '<p>راجع الأرقام المدخلة.</p>'; return; }
+  el.classList.remove('hidden');
+  el.innerHTML = '<p class="big">القسط الشهري: <b>' + fmt(l.pmt) + '</b></p>' +
+                 '<p>إجمالي ما ستدفعه: <b>' + fmt(l.total) + '</b></p>' +
+                 '<p>إجمالي الفوائد: <b>' + fmt(l.interest) + '</b></p>';
+  const rows = schedule(P, rate, months, 12);
+  const sc = g('sched');
+  sc.classList.remove('hidden');
+  sc.innerHTML = '<h2>أول ' + rows.length + ' قسطًا</h2><table><tr><th>القسط</th><th>الشهري</th><th>منه فائدة</th><th>منه أصل</th><th>المتبقي</th></tr>' +
+    rows.map(r => '<tr><td>' + r.i + '</td><td>' + fmt(r.pmt) + '</td><td>' + fmt(r.intPart) + '</td><td>' + fmt(r.prinPart) + '</td><td>' + fmt(r.bal) + '</td></tr>').join('') +
+    '</table>';
+}
+
+window.__test = function () {
+  const a = loan(120000, 12, 12);
+  const b = loan(10000, 0, 10);
+  const s = schedule(120000, 12, 12, 12);
+  const ok = Math.abs(a.pmt - 10661.86) < 1 && Math.abs(a.interest - 7942.3) < 15 &&
+             Math.abs(b.pmt - 1000) < 0.001 && b.interest === 0 &&
+             s.length === 12 && Math.abs(s[11].bal) < 0.5;
+  return { pass: ok, details: { a, b, lastBal: s[11].bal } };
+};
+
+window.__demo = function () {
+  g('amount').value = 120000; g('rate').value = 12; g('months').value = 12;
+  calc();
+};
+
+</script>
+</body>
+</html>
